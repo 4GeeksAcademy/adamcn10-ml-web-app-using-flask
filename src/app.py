@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 from pickle import load
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 app = Flask(__name__)
@@ -15,8 +16,11 @@ def index():
     if request.method == "GET":
         return render_template('index.html', prediction=None)
     if request.method == "POST":
-        data = str(request.form["val1"])
-        prediction = str(model.predict(data))
+        val1 = str(request.form["val1"]).str.strip().str.lower()
+        vec_model = CountVectorizer(stop_words = "english")
+        predata = vec_model.fit_transform(val1).toarray()
+        data = [[predata]]
+        prediction = str(model.predict(data)[0])
         pred_class = class_dict[prediction]
         return render_template('index.html', prediction=pred_class)
     return None
