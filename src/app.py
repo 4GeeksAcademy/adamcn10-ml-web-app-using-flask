@@ -1,4 +1,28 @@
-from utils import db_connect
-engine = db_connect()
+from flask import Flask, request, render_template
+from pickle import load
 
-# your code here
+
+app = Flask(__name__)
+
+
+model = load(open('naive-bayes-multinomial.pkl', 'rb'))
+class_dict = {"0": "It's a negative comment ):",
+              "1": "Its a positiva comment (:"}
+
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "GET":
+        return render_template('index.html', prediction=None)
+    if request.method == "POST":
+        val1 = float(request.form["val1"])
+        data = [[val1]]
+        prediction = str(model.predict(data)[0])
+        pred_class = class_dict[prediction]
+        return render_template('index.html', prediction=pred_class)
+    return None
+
+
+if __name__ == '__main__':
+    # PORT = int(os.environ.get('PORT', 3000))
+    app.run(host='0.0.0.0', port=3000, debug=True)
