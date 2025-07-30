@@ -15,7 +15,7 @@ def index():
     if request.method == "GET":
         return render_template('index.html', prediction=None)
     if request.method == "POST":
-        val1 = float(request.form["val1"])
+        val1 = str(request.form["val1"])
         data = [[val1]]
         prediction = str(model.predict(data)[0])
         pred_class = class_dict[prediction]
